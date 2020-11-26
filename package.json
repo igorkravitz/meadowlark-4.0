@@ -1,0 +1,17 @@
+{
+    "name": "meadowlark-4.0",
+    "version": "1.0.0",
+    "keywords": [
+        "util",
+        "functional",
+        "server",
+        "client",
+        "browser"
+    ],
+    "author": "Игорь",
+    "contributors": [],
+    "dependencies": {
+        "express": "~4.16.1",
+        "express-handlebars": "~5.2.0"
+    }
+}
