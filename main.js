@@ -1,17 +1,41 @@
+// var path = require('path');
 const fortune = require('./lib/fortune.js');
+const weather = require('./lib/weather');
 const express = require('express');
 const app = express();
+var express_handlebars_sections = require('express-handlebars-sections');
 // Установка механизма представления handlebars
 var handlebars = require('express-handlebars')
-        .create({defaultLayout: 'main'});
-app.engine('handlebars', handlebars.engine);
-app.set('views', __dirname + '/views/');
-app.set('view engine', '.handlebars');
+    .create({
+        defaultLayout: 'main',
+        extname: 'hbs',
+        helpers: {
+            section: (name, options) => {
+                if (!this._sections) {
+                    this._sections = {};
+                }
+                this._sections[name] = options.fn(this);
+                return null;
+            }
+        }
+            // layoutsDir: path.join(__dirname, "views/layouts"),
+            // partialsDir: path.join(__dirname, "views/partials"),
+        });
+app.engine('hbs', handlebars.engine);
+express_handlebars_sections(handlebars);
+// app.set('views', __dirname + '/views/');
+// app.set('partialsDir', __dirname + '/views/partials/')
+app.set('view engine', 'hbs');
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public'));
 app.use(function (req, res, next) {
     res.locals.showTests = app.get('env') !== 'production' &&
-            req.query.test === '1';
+        req.query.test === '1';
+    next();
+});
+app.use(function (req, res, next) {
+    if (!res.locals.partials) res.locals.partials = {};
+    res.locals.partials.weatherContext = weather.getWeatherData();
     next();
 });
 app.get('/', function (req, res) {
@@ -23,13 +47,14 @@ app.get('/about', function (req, res) {
         pageTestScript: '/qa/tests-about.js'
     });
 });
+app.get('/jquery-test', function(req, res){
+	res.render('jquery-test');
+});
 app.get('/tours/hood-river', function (req, res) {
     res.render('tours/hood-river');
 });
 app.get('/tours/request-group-rate', function (req, res) {
-    res.render('tours/request-group-rate', {
-        section: true
-    });
+    res.render('tours/request-group-rate');
 });
 // Обобщенный обработчик 404 (промежуточное ПО)
 app.use(function (req, res, next) {
@@ -44,5 +69,5 @@ app.use(function (err, req, res, next) {
 });
 app.listen(app.get('port'), function () {
     console.log('Express запущен на http://localhost:' +
-            app.get('port') + '; нажмите Ctrl+C для завершения.');
+        app.get('port') + '; нажмите Ctrl+C для завершения.');
 });

@@ -1,0 +1,11 @@
+<h1>Добро пожаловать в Meadowlark Travel</h1>
+{{> weather}}
+{{#section 'head'}}
+<!-- Мы хотим, чтобы Google игнорировал эту страницу -->
+<meta name="robots" content="noindex">
+{{/section}}
+{{#section 'jquery'}}
+  <script>
+    $('document').ready(function () { $('h1').html('jQuery работает'); });    
+  </script>
+{{/section}}
